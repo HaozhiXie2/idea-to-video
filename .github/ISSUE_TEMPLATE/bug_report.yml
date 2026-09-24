@@ -1,0 +1,24 @@
+name: 问题反馈
+description: 反馈可复现的工作台问题，请勿上传密钥或私人素材。
+title: "[问题] "
+body:
+  - type: markdown
+    attributes:
+      value: "请先移除截图、日志中的密钥、设备码、账户信息和私人素材。不要为复现问题反复提交付费生成。"
+  - type: textarea
+    id: reproduction
+    attributes:
+      label: 操作步骤与实际结果
+      description: 在哪个工作区、执行了什么、期望什么、实际发生什么？
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: 版本与系统
+      placeholder: "提交版本、Windows 版本、浏览器"
+  - type: textarea
+    id: message
+    attributes:
+      label: 已脱敏的错误信息
+      description: 不要提供 API 密钥、即梦登录状态文件或设备码。

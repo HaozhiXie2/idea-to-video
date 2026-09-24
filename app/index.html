@@ -1,0 +1,33 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="studio-token" content="__TOKEN__">
+  <meta name="color-scheme" content="light">
+  <title>灵感影坊 · 让想法有画面</title>
+  <link rel="stylesheet" href="/style.css">
+  <script src="/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#workspace">跳到创作区</a>
+  <div class="shell">
+    <aside class="sidebar" aria-label="作品导航">
+      <a class="brand" href="/" aria-label="灵感影坊首页"><span class="brand-mark" aria-hidden="true">✳</span><span>灵感影坊<small>IDEA TO VIDEO</small></span></a>
+      <p class="sidebar-note">不必懂镜头。<br>先说说你的想法。</p>
+      <button id="new-project" class="button dark full"><span aria-hidden="true">＋</span> 新建作品</button>
+      <div class="sidebar-section"><span>我的创作</span><span id="project-count">0</span></div>
+      <nav id="project-list" class="project-list" aria-label="我的作品"><p class="muted small">正在读取本机作品…</p></nav>
+      <div class="sidebar-bottom"><div class="local-dot">独立本机工作台 · 7862</div><p>作品与设置保存在这台电脑。<br>云端生成只在你确认后发生。</p><button id="settings-button" class="button subtle full">创作服务设置 <span aria-hidden="true">↗</span></button></div>
+    </aside>
+    <div class="main-shell">
+      <header class="topbar"><span class="eyebrow">你的想法 / 你的导演席</span><div class="topbar-right"><span id="connection-status" class="status-pill">连接本机中</span><button id="history-button" class="button subtle compact" hidden>版本记录</button></div></header>
+      <main id="workspace" tabindex="-1" aria-label="创作工作台"></main>
+      <footer class="footer"><span>灵感影坊 <span class="footer-dot">·</span> 小范围试用版</span><span>确认方案 → 确定形象 → 看过分镜 → 开始生成</span></footer>
+    </div>
+  </div>
+  <div id="toast" class="toast" role="status" aria-live="polite" hidden></div>
+  <dialog id="studio-dialog" aria-labelledby="dialog-title"><div id="dialog-content"></div></dialog>
+  <noscript><div class="noscript">请启用浏览器 JavaScript 后使用创作工作台。</div></noscript>
+</body>
+</html>

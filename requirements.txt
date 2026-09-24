@@ -1,0 +1,3 @@
+# Wheels include a platform-specific FFmpeg executable. No GPU is required.
+# Official release: https://pypi.org/project/imageio-ffmpeg/0.6.0/
+imageio-ffmpeg==0.6.0
