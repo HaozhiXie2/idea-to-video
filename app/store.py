@@ -36,11 +36,13 @@ class Store:
     def __init__(self, root):
         self.root = Path(root).resolve()
         self.projects = self.root / 'data/projects'
+        if not self.projects.resolve().is_relative_to(self.root):
+            raise ValueError('作品目录必须位于本项目内部')
         self.projects.mkdir(parents=True, exist_ok=True)
 
     def folder(self, key):
         path = self.projects / identifier(key)
-        if path.is_symlink() or path.resolve().parent != self.projects.resolve():
+        if path.is_symlink() or (hasattr(path, 'is_junction') and path.is_junction()) or path.resolve().parent != self.projects.resolve():
             raise ValueError('无效项目目录')
         return path
 
@@ -119,7 +121,9 @@ class Store:
         base = self.folder(pid).resolve()
         path = base / relative
         resolved = path.resolve()
-        if not resolved.is_relative_to(base) or path.is_symlink() or not path.is_file():
+        linked = any(part.is_symlink() or (hasattr(part, 'is_junction') and part.is_junction())
+                     for part in (path, *path.parents) if part != base and part.is_relative_to(base))
+        if not resolved.is_relative_to(base) or linked or not path.is_file():
             raise ValueError('素材不存在')
         return resolved
 

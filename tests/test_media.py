@@ -291,10 +291,20 @@ class RealFFmpegTests(unittest.TestCase):
         draft = self.engine.export([{'path': image, 'duration': 5}], self.root / 'exports/static-draft.mp4', '9:16', True)
         final = self.engine.export([{'path': video, 'duration': 5}, {'path': video, 'duration': 5}], self.root / 'exports/final.mp4', '9:16', False)
         self.assertAlmostEqual(self.engine._duration(draft), 5, delta=.06)
-        self.assertAlmostEqual(self.engine._duration(final), 10, delta=.12)
+        self.assertAlmostEqual(self.engine._duration(final), 10, delta=.02)
         metadata = self.engine._ffmpeg_run(['-i', str(final)]).stderr
         self.assertIn('720x1280', metadata)
         self.assertNotIn('Audio:', metadata)
+
+    def test_three_silent_shots_do_not_lose_one_frame_per_shot(self):
+        video = self.root / 'silent.mp4'
+        self.command(['-f', 'lavfi', '-i', 'color=c=blue:s=180x320:r=24', '-t', '5',
+                      '-c:v', 'libx264', '-pix_fmt', 'yuv420p', '-an', str(video)])
+        final = self.engine.export([{'path': video, 'duration': 5}] * 3,
+                                   self.root / 'exports/three-shots.mp4', '9:16', False)
+        self.assertAlmostEqual(self.engine._duration(final), 15, delta=.02)
+        decoded = self.engine._ffmpeg_run(['-i', str(final), '-map', '0:v:0', '-f', 'null', '-']).stderr
+        self.assertRegex(decoded, r'frame=\s*360\s')
 
     def test_audio_cannot_mask_a_short_video_track(self):
         video = self.root / 'short-video-long-audio.mp4'

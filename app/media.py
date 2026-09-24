@@ -320,7 +320,7 @@ class MediaEngine:
         self._directory(destination.parent)
         width, height = RATIOS[ratio]
         filters = (f'scale={width}:{height}:force_original_aspect_ratio=decrease,'
-                   f'pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1,fps=24')
+                   f'pad={width}:{height}:(ow-iw)/2:(oh-ih)/2:color=black,setsar=1')
         if draft:
             filters += self._draft_filter()
         # All temporary files are generated under this unique export directory;
@@ -333,7 +333,7 @@ class MediaEngine:
                 if draft:
                     args += ['-loop', '1', '-framerate', '24']
                 args += ['-i', str(source), '-t', str(duration), '-map', '0:v:0', '-an',
-                         '-vf', filters, '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
+                         '-vf', filters, '-r', '24', '-c:v', 'libx264', '-preset', 'veryfast', '-crf', '21',
                          '-pix_fmt', 'yuv420p', '-threads', '2', '-movflags', '+faststart', str(output)]
                 result = self._ffmpeg_run(args)
                 if result.returncode or not output.is_file() or not output.stat().st_size:

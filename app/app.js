@@ -109,6 +109,7 @@
     e.title=state.status?'这个页面只连接当前电脑的独立工作台。':'请打开灵感影坊启动器。';
   }
   function serviceNotice() {
+    if(state.status?.test_mode)return notice('离线验收环境：内容和生成结果为测试桩，不调用云端、不扣费，也不代表 AI 生成质量。','');
     if(!state.status)return notice('暂时连接不到本机服务。请确认独立启动器正在运行，刷新后继续。','error',btn('重新连接',()=>boot(),'outline compact'));
     if(!state.status.text_configured)return notice('开始分析前，还差一次文字服务设置。未配置时不会生成演示方案，也不会扣取生成额度。','',btn('设置文字服务',()=>openSettings(),'outline compact'));
     return null;
@@ -142,7 +143,7 @@
   }
   function renderProject() {
     const p=state.project,a=p.approvals||{};
-    const tabs=[['plan','定方案','你的故事与表达方向',a.plan],['assets','定形象','先看关键参考图',a.assets],['film','做成片','分镜、试镜与导出',gate(p,'final')]];
+    const tabs=[['plan','定方案','你的故事与表达方向',a.plan],['assets','定形象','先看关键参考图',a.assets],['film','做成片','分镜、试镜与导出',gate(p,'final')&&(p.exports||[]).some(e=>e.kind==='final'&&e.status==='done'&&!e.stale)]];
     return [h('div',{class:'workspace-head'},h('div',{},h('span',{class:'eyebrow'},'YOUR DIRECTOR’S DESK'),h('h1',{},p.title||'未命名作品'),h('div',{class:'workspace-meta'},tag(TEMPLATES[p.template]?.name||'创作'),tag(p.duration+' 秒'),tag(p.ratio),tag(PHASE[p.phase]||'创作中','good'))),row(btn('创作设置',()=>openProjectSettings(),'outline compact'),btn('服务设置',()=>openSettings(),'outline compact'))),
       h('nav',{class:'step-nav','aria-label':'创作工作区'},...tabs.map(([id,name,sub,done],i)=>h('button',{class:'step-tab'+(state.workspace===id?' active':'')+(done?' done':''),'aria-current':state.workspace===id?'step':null,onclick:()=>{state.workspace=id;render();}},h('span',{class:'step-num'},done?'✓':'0'+(i+1)),h('span',{},h('strong',{},name),h('small',{},sub))))),
       p.text_error?notice(p.text_error,'error'):null,
@@ -176,7 +177,7 @@
     return h('section',{class:'panel'},h('div',{class:'panel-header'},h('div',{},h('div',{class:'section-kicker'},'LET’S MAKE IT YOURS'),h('h2',{},'先对齐这几个选择'),h('p',{},'不知道可以说不知道。相关内容会先停住，不会替你做创作决定。')),tag(p.questions.length+' 个问题','warn')),...cards,analyzeButton(stage,'带着我的回答继续  →',answers));
   }
   function approval(stage,title,description,enabled,next) {
-    const approved=stage==='motion'?state.project.trial?.approved:state.project.approvals?.[stage];
+    const approved=stage==='motion'?trialValid(state.project):state.project.approvals?.[stage];
     return h('div',{class:'approval-bar'},h('div',{},h('strong',{},title),h('p',{},description)),approved?h('span',{class:'approved-mark'},'✓ 已确认'):btn('我确认，继续  →',e=>guarded(e.currentTarget,()=>mutate('approve',{stage},next)),'',!enabled));
   }
   function renderPlan() {

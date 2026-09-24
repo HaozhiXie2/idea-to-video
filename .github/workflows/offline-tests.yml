@@ -26,7 +26,9 @@ jobs:
       - name: Install pinned local render dependency
         run: 'python -m pip install --disable-pip-version-check --only-binary=:all: -r requirements.txt'
       - name: Python offline tests (no cloud credentials)
-        run: python -m unittest discover -s tests -p "test_*.py" -v
+        run: |
+          $env:IDEASTUDIO_TEST_FFMPEG = python -c "import imageio_ffmpeg; print(imageio_ffmpeg.get_ffmpeg_exe())"
+          python -m unittest discover -s tests -p "test_*.py" -v
       - name: Frontend offline tests
         run: node tests/test_ui.cjs
       - name: Check source and documentation hygiene
